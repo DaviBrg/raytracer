@@ -16,7 +16,15 @@ set (SOURCES
 set (TESTS
      tests/vec3_tests.cpp)
 
-find_package(Catch2 REQUIRED)
+Include(FetchContent)
+
+FetchContent_Declare(
+  Catch2
+  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+  GIT_TAG        v3.0.1 # or a later release
+)
+
+FetchContent_MakeAvailable(Catch2)
 
 add_executable(raytracer ${HEADERS} ${SOURCES} src/main.cpp)
 
