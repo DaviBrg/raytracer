@@ -1,7 +1,7 @@
 #include "image.h"
 #include <fstream>
 
-int main()
+auto main() -> int
 {
     rtracer::Image img{2,2};
 
@@ -15,8 +15,5 @@ int main()
     rtracer::serializePPM(file, img);
 
     file.flush();
-
-
-
     return 0;
 }

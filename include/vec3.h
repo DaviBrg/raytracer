@@ -5,19 +5,24 @@
 #include <numeric>
 #include <iostream>
 
+#include "rtincludes.h"
+
 namespace rtracer
 {
 
 struct vec3;
-double dot(vec3 const& lhs, vec3 const& rhs);
+rtfloat dot(vec3 const& lhs, vec3 const& rhs);
 
 using color3 = vec3;
 using point3 = vec3;
 
 struct vec3
 {
-    vec3(double x, double y, double z):
-        x(x),y(y),z(z) {};
+    vec3():
+        x{0.0}, y{0.0}, z{0.0} {};
+
+    vec3(rtfloat x, rtfloat y, rtfloat z):
+        x{x}, y{y}, z{z} {};
 
 
     vec3& operator-()
@@ -26,6 +31,15 @@ struct vec3
         y=-y;
         z=-z;
         return *this;
+    }
+
+    vec3 operator-() const 
+    {
+        auto copy = *this;
+        copy.x=-x;
+        copy.y=-y;
+        copy.z=-z;
+        return copy;
     }
 
     vec3& operator+=(vec3 const& other)
@@ -42,7 +56,7 @@ struct vec3
         return (*this)+=(-copy);
     }
 
-    vec3& operator*=(double value)
+    vec3& operator*=(rtfloat value)
     {
         x *= value;
         y *= value;
@@ -50,7 +64,7 @@ struct vec3
         return *this;
     }
 
-    vec3& operator/=(double value)
+    vec3& operator/=(rtfloat value)
     {
         x /= value;
         y /= value;
@@ -58,18 +72,18 @@ struct vec3
         return *this;
     }
 
-    double length() const
+    rtfloat length() const
     {
         return sqrt(dot(*this, *this));
     }
 
     vec3 normalize() const
     {
-        double len = length();
+        rtfloat len = length();
         return {x/len, y/len, z/len};
     }
 
-    double x,y,z;
+    rtfloat x,y,z;
 };
 
 
@@ -80,9 +94,9 @@ inline std::ostream& operator<<(std::ostream& out, vec3 const& vec)
 
 inline bool operator==(vec3 const& lhs, vec3 const& rhs)
 {
-    return (std::abs(lhs.x - rhs.x) < std::numeric_limits<double>::epsilon()) &&
-           (std::abs(lhs.y - rhs.y) < std::numeric_limits<double>::epsilon()) &&
-           (std::abs(lhs.z - rhs.z) < std::numeric_limits<double>::epsilon());
+    return (std::abs(lhs.x - rhs.x) < std::numeric_limits<rtfloat>::epsilon()) &&
+           (std::abs(lhs.y - rhs.y) < std::numeric_limits<rtfloat>::epsilon()) &&
+           (std::abs(lhs.z - rhs.z) < std::numeric_limits<rtfloat>::epsilon());
 }
 
 inline vec3 operator+(vec3 const& lhs, vec3 const& rhs)
@@ -100,17 +114,17 @@ inline vec3 operator*(vec3 const& lhs, vec3 const& rhs)
     return {lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z};
 }
 
-inline vec3 operator*(vec3 const& vec, double value)
+inline vec3 operator*(vec3 const& vec, rtfloat value)
 {
     return {vec.x * value, vec.y * value, vec.z * value};
 }
 
-inline vec3 operator*(double value, vec3 const& vec)
+inline vec3 operator*(rtfloat value, vec3 const& vec)
 {
     return vec*value;
 }
 
-inline vec3 operator/(vec3 const& vec, double value)
+inline vec3 operator/(vec3 const& vec, rtfloat value)
 {
     return {vec.x / value, vec.y / value, vec.z / value};
 }
@@ -122,7 +136,7 @@ inline vec3 cross(vec3 const& lhs, vec3 const& rhs)
             lhs.x*rhs.y - lhs.y*rhs.x};
 }
 
-inline double dot(vec3 const& lhs, vec3 const& rhs)
+inline rtfloat dot(vec3 const& lhs, vec3 const& rhs)
 {
     return lhs.x*rhs.x + lhs.y*rhs.y + lhs.z*rhs.z;
 }

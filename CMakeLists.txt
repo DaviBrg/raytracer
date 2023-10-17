@@ -8,13 +8,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set (HEADERS
      include/rtincludes.h
      include/image.h
-     include/vec3.h)
+     include/vec3.h
+     include/camera.h
+     include/ray.h)
 
 set (SOURCES
+    src/camera.cpp
     src/image.cpp)
 
 set (TESTS
-     tests/vec3_tests.cpp)
+     tests/vec3_tests.cpp
+     tests/camera_tests.cpp)
 
 Include(FetchContent)
 

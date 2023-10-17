@@ -1,9 +1,10 @@
 #include "image.h"
+#include "ray.h"
 
 namespace
 {
 
-void write_color(std::ostream& os, rtracer::color3 const& color)
+auto WriteColor(std::ostream& os, rtracer::color3 const& color) -> void
 {
     os << static_cast<int>(255.99 * color.x) << ' ';
     os << static_cast<int>(255.99 * color.y) << ' ';
@@ -25,14 +26,14 @@ Image::Image(rtsize width, rtsize height):
     }
 }
 
-void serializePPM(std::ostream &os, Image const& image)
+auto serializePPM(std::ostream& os, Image const& image) -> void
 {
     os << "P3\n" << image.width() << ' '
        << image.height() << '\n' << IMAGE_DEPTH << '\n';
 
     for (auto const& color : image )
     {
-        write_color(os, color);
+        WriteColor(os, color);
     }
 }
 
