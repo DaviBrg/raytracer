@@ -14,47 +14,47 @@ struct Image
 {
     explicit Image(rtsize width, rtsize height);
 
-    auto width() const -> rtsize
+    [[nodiscard]] auto width() const noexcept -> rtsize
     {
         return _width;
     }
 
-    auto height() const -> rtsize
+    [[nodiscard]] auto height() const noexcept -> rtsize
     {
         return _height;
     }
 
-    auto size() const -> rtsize
+    [[nodiscard]] auto size() const noexcept -> rtsize
     {
         return _width * _height;
     }
 
-    auto begin() const
+    [[nodiscard]] auto begin() const noexcept -> auto
     {
         return _buffer.begin();
     }
 
-    auto end() const
+    [[nodiscard]] auto end() const noexcept -> auto
     {
         return _buffer.end();
     }
 
-    auto cbegin() const -> auto
+    [[nodiscard]] auto cbegin() const noexcept -> auto
     {
         return _buffer.cbegin();
     }
 
-    auto cend() const -> auto
+    [[nodiscard]] auto cend() const noexcept -> auto
     {
         return _buffer.cend();
     }
 
-    auto operator[](size_t index) -> auto&
+    [[nodiscard]] auto operator[](size_t index) noexcept -> color3&
     {
         return _buffer.at(index);
     }
 
-    auto operator[](size_t index) const -> auto const&
+    [[nodiscard]] auto operator[](size_t index) const noexcept -> color3 const&
     {
         return _buffer.at(index);
     }
