@@ -12,13 +12,16 @@ set (HEADERS
      include/vec3.h
      include/camera.h
      include/ray.h
+     include/objectconcept.h
      include/object.h
+     include/objectmodel.h
      )
 
 set (SOURCES
     src/camera.cpp
     src/renderer.cpp
     src/image.cpp
+    src/object.cpp
     )
 
 set (TESTS

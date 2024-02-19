@@ -1,19 +1,24 @@
 #pragma once
 
-#include "ray.h"
+#include "objectmodel.h"
 
 namespace rtracer
 {
 
-using Intersection = std::pair<rtfloat,vec3>;
-
 struct Object
 {
+    template <class T>
+    Object(T&& object):
+    _object(std::make_unique<ObjectModel<T>>(std::forward<T>(object))){}
+    
 
-    [[nodiscard]] virtual auto Intersect(Ray const& ray) const noexcept -> Intersection = 0;
+    Object(Object const& other);
+    auto operator=(Object const& other) -> Object &;
 
-    virtual ~Object() = default;
+    [[nodiscard]] auto Intersect(Ray const& ray) const noexcept -> std::optional<Intersection>;
 
+private:
+    std::unique_ptr<ObjectConcept> _object;
 };
 
 }
