@@ -2,6 +2,7 @@
 
 #include "ray.h"
 
+#include <memory>
 #include <optional>
 
 namespace rtracer
