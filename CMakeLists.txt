@@ -42,6 +42,10 @@ add_executable(raytracer ${HEADERS} ${SOURCES} src/main.cpp)
 
 add_executable(raytracertests ${HEADERS} ${SOURCES} ${TESTS})
 
+enable_testing()
+
+add_test(NAME all COMMAND raytracertests)
+
 target_link_libraries(raytracertests PRIVATE Catch2::Catch2WithMain)
 
 target_include_directories(raytracertests
