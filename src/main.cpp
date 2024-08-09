@@ -1,47 +1,40 @@
 #include <fstream>
 
-#include "object.h"
+#include "renderer.h"
 #include "image.h"
 #include "object.h"
-
-
-namespace rtracer
-{
-
-struct Circle
-{
-    [[nodiscard]] auto Intersect(Ray const& ray) const noexcept -> std::optional<Intersection>
-    {
-        return {};
-    }
-};
-
-}
+#include "sphere.h"
+#include "vec3.h"
 
 
 auto main() -> int
 {
-    auto obj = rtracer::Object{rtracer::Circle{}};
+    rtracer::Image img{1000,1000};
 
-    auto obj2 = obj;
+    auto rendererSettings = rtracer::Renderer::Settings{};
+    rendererSettings.eye = rtracer::point3{30.0, 30.0, 30.0};
+    rendererSettings.at = rtracer::point3{0.0, 0.0, 0.0};
+    rendererSettings.focalDistance = 1.0;
+    rendererSettings.viewportHeight = 1.0;
+    rendererSettings.lightPosition = rtracer::point3{0.0, 10.0, 0.0};
+    rendererSettings.backgroundColor = rtracer::rgbColor(173, 216, 230);
 
-    auto intersec = obj2.Intersect(
-        rtracer::Ray{
-            rtracer::point3{0,0,0},
-            rtracer::vec3{0,0,0}
-    });
+    auto renderer = rtracer::Renderer(img, rendererSettings);
 
-    rtracer::Image img{2,2};
+// rtracer::rgbColor(140, 115, 12)
+// rtracer::rgbColor(255, 215, 0)
 
-    img[0] = rtracer::color3(1,0,0);
-    img[1] = rtracer::color3(0,1,0);
-    img[2] = rtracer::color3(0,0,1);
-    img[3] = rtracer::color3(1,0,1);
+    auto goldenMaterial = rtracer::Material{rtracer::rgbColor(255, 215, 0), rtracer::rgbColor(255, 215, 0), rtracer::rgbColor(255, 255, 255)};
+    renderer.addObject(rtracer::Object{rtracer::Sphere{rtracer::point3{0.0, 0.0, 0.0}, 3.0, goldenMaterial}});
+
+    renderer.render();
 
     std::ofstream file{"test.ppm"};
 
     rtracer::serializePPM(file, img);
 
     file.flush();
+
+
     return 0;
 }

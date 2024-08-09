@@ -6,9 +6,9 @@ namespace
 
 auto WriteColor(std::ostream& os, rtracer::color3 const& color) -> void
 {
-    os << static_cast<int>(255.99 * color.x) << ' ';
-    os << static_cast<int>(255.99 * color.y) << ' ';
-    os << static_cast<int>(255.99 * color.z) << '\n';
+    os << static_cast<int>(std::min<int>(255, 255.99 * color.x)) << ' ';
+    os << static_cast<int>(std::min<int>(255, 255.99 * color.y)) << ' ';
+    os << static_cast<int>(std::min<int>(255, 255.99 * color.z)) << '\n';
 }
 
 }

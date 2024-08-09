@@ -15,9 +15,13 @@ auto Object::operator=(Object const& other) -> Object &
     return *this;
 }
 
-auto Object::Intersect(Ray const& ray) const noexcept -> std::optional<Intersection>
+auto Object::intersect(Ray const& ray) const noexcept -> std::optional<Intersection>
 {
-    return _object->Intersect(ray);
+    return _object->intersect(ray);
 }
 
+auto Object::material() const noexcept -> Material
+{
+    return _object->material();;
+}
 }

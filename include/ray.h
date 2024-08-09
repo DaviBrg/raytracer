@@ -13,12 +13,12 @@ struct Ray
     Ray(const point3& origin, const vec3& direction):
     _origin{origin}, _direction{direction} {};
 
-    [[nodiscard]] auto Origin() const noexcept -> const point3&
+    [[nodiscard]] auto origin() const noexcept -> const point3&
     {
         return _origin;
     }
 
-    [[nodiscard]] auto Direction() const noexcept -> const vec3&
+    [[nodiscard]] auto direction() const noexcept -> const vec3&
     {
         return _direction;
     }

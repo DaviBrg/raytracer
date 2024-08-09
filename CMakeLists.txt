@@ -6,27 +6,30 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set (HEADERS
-     include/rtincludes.h
-     include/renderer.h
-     include/image.h
-     include/vec3.h
-     include/camera.h
-     include/ray.h
-     include/objectconcept.h
-     include/object.h
-     include/objectmodel.h
-     )
+    include/camera.h
+    include/image.h
+    include/sphere.h
+    include/object.h
+    include/objectconcept.h
+    include/objectmodel.h
+    include/ray.h
+    include/renderer.h
+    include/rtincludes.h
+    include/vec3.h
+)
 
 set (SOURCES
     src/camera.cpp
-    src/renderer.cpp
+    src/sphere.cpp
     src/image.cpp
     src/object.cpp
-    )
+    src/renderer.cpp
+)
 
 set (TESTS
-     tests/vec3_tests.cpp
-     tests/camera_tests.cpp)
+    tests/camera_tests.cpp
+    tests/vec3_tests.cpp
+)
 
 Include(FetchContent)
 

@@ -21,13 +21,13 @@ TEST_CASE("General camera tests", "[camera]")
     auto settings = Camera::Settings{};
 
     auto camera = Camera{settings};
-    auto generatedRays = camera.CreateRays();
+    auto generatedRays = camera.createRays();
 
     REQUIRE(generatedRays.size() == expectedRays.size());
     auto areRaysEqual = std::equal(std::begin(expectedRays), std::end(expectedRays), std::begin(generatedRays),
     [](Ray const& lhs, Ray const& rhs)
     {
-        return (lhs.Origin() == rhs.Origin()) && (lhs.Direction() == rhs.Direction());
+        return (lhs.origin() == rhs.origin()) && (lhs.direction() == rhs.direction());
     });
 
     REQUIRE(areRaysEqual);

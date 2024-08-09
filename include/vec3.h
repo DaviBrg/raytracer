@@ -86,6 +86,12 @@ struct vec3
     rtfloat x,y,z;
 };
 
+struct Material
+{
+    color3 ambient;
+    color3 diffuse;
+    color3 specular;
+};
 
 inline std::ostream& operator<<(std::ostream& out, vec3 const& vec)
 {
@@ -139,6 +145,11 @@ inline vec3 cross(vec3 const& lhs, vec3 const& rhs)
 inline rtfloat dot(vec3 const& lhs, vec3 const& rhs)
 {
     return lhs.x*rhs.x + lhs.y*rhs.y + lhs.z*rhs.z;
+}
+
+inline color3 rgbColor(uint8_t r, uint8_t g, uint8_t b)
+{
+    return color3{static_cast<rtfloat>(r)/255.0, static_cast<rtfloat>(g)/255.0, static_cast<rtfloat>(b)/255.0};
 }
 
 }

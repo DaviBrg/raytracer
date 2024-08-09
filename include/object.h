@@ -1,6 +1,8 @@
 #pragma once
 
+
 #include "objectmodel.h"
+#include "intersection.h"
 
 namespace rtracer
 {
@@ -15,7 +17,9 @@ struct Object
     Object(Object const& other);
     auto operator=(Object const& other) -> Object &;
 
-    [[nodiscard]] auto Intersect(Ray const& ray) const noexcept -> std::optional<Intersection>;
+    [[nodiscard]] auto intersect(Ray const& ray) const noexcept -> std::optional<Intersection>;
+    
+    [[nodiscard]] auto material() const noexcept -> Material;
 
 private:
     std::unique_ptr<ObjectConcept> _object;

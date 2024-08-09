@@ -19,7 +19,7 @@ Camera::Camera(Settings const& settings):
     _eye{settings.eye},
     _at{settings.at} {}
 
-auto Camera::CreateRays() const -> Rays
+auto Camera::createRays() const -> Rays
 {
     Rays result;
     rtfloat heightStep = _viewportHeight/_pixelsHeight;

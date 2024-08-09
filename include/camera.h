@@ -23,37 +23,37 @@ struct Camera
     explicit Camera(Settings const&);
 
 
-    [[nodiscard]] auto ViewportHeight() const noexcept -> rtfloat
+    [[nodiscard]] auto viewportHeight() const noexcept -> rtfloat
     {
         return _viewportHeight;
     }
 
-    [[nodiscard]] auto ViewportRatio() const noexcept -> rtfloat
+    [[nodiscard]] auto viewportRatio() const noexcept -> rtfloat
     {
         return _viewportRatio;
     }
 
-    [[nodiscard]] auto ViewportWidth() const noexcept -> rtfloat
+    [[nodiscard]] auto viewportWidth() const noexcept -> rtfloat
     {
         return _viewportWidth;
     }
 
-    [[nodiscard]] auto PixelsHeight() const noexcept -> rtsize
+    [[nodiscard]] auto pixelsHeight() const noexcept -> rtsize
     {
         return _pixelsHeight;
     }
 
-    [[nodiscard]] auto PixelsWidth() const noexcept -> rtsize
+    [[nodiscard]] auto pixelsWidth() const noexcept -> rtsize
     {
         return _pixelsWidth;
     }
 
-    [[nodiscard]] auto FocalLength() const noexcept -> rtfloat
+    [[nodiscard]] auto focalLength() const noexcept -> rtfloat
     {
         return _focalLength;
     }
 
-    [[nodiscard]] auto CreateRays() const -> Rays;
+    [[nodiscard]] auto createRays() const -> Rays;
 
 
     private:
