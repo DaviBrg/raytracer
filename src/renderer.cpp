@@ -39,33 +39,28 @@ auto Renderer::render() const -> void
     auto rays = _camera.createRays();
     assert(_image.size() == rays.size());
 
-    // std::ranges::for_each(_objects | std::views::transform([](const auto& obj){ return obj;}));
-
-    for (const auto& obj : _objects)
-    {
-        
-    }
-
-    const auto& obj = _objects[0];
     for(rtsize i = 0; i < _image.size(); ++i)
     {
-        const Ray& ray = rays.at(i);
-        auto opt = obj.intersect(ray);
-        if (opt.has_value())
+        Ray const& ray = rays.at(i);
+        auto [ptrObj, optIntersection] = closestIntersection(ray);
+        if (optIntersection.has_value())
         {
-            auto intersection = opt.value();
-            auto toLight = (_settings.lightPosition - (ray.origin() + ray.direction()*intersection.t)).normalize();
-            auto diffuseComponenet = dot(intersection.normal, toLight);
-            if (diffuseComponenet < 0) diffuseComponenet = 0;
-            _image[i] = obj.material().diffuse*diffuseComponenet + (AMBIENT_COMPONENT*obj.material().ambient);
+            auto intersection = optIntersection.value();
+            auto intersectionPoint = ray.origin() + ray.direction()*intersection.t;
+            if (canReachLightSource(intersectionPoint))
+            {
+                renderIntersection(i, ray, intersection, ptrObj->material());
+            }
+            else
+            {
+                _image[i] = (AMBIENT_COMPONENT*ptrObj->material().ambient);
+            }
         }
         else
         {
             _image[i] = _settings.backgroundColor;
         }
     }
-
-    
 }
 
 auto Renderer::updateRenderingSettings(Settings settings) -> void
@@ -79,7 +74,7 @@ auto Renderer::addObject(Object object) -> void
     _objects.emplace_back(std::move(object));
 }
 
-auto Renderer::renderIntersection(rtsize pixelIndex, Ray const& ray,  Intersection const &intersection, Material const& material) -> void
+auto Renderer::renderIntersection(rtsize pixelIndex, Ray const& ray,  Intersection const &intersection, Material const& material) const -> void
 {
     auto toLight = (_settings.lightPosition - (ray.origin() + ray.direction()*intersection.t)).normalize();
     auto diffuseComponenet = dot(intersection.normal, toLight);
@@ -87,4 +82,67 @@ auto Renderer::renderIntersection(rtsize pixelIndex, Ray const& ray,  Intersecti
     _image[pixelIndex] = material.diffuse*diffuseComponenet + (AMBIENT_COMPONENT*material.ambient);
 }
 
+auto Renderer::closestIntersection(Ray const& ray) const -> ObjectIntersection
+{
+    std::vector<ObjectIntersection> intersections;
+
+    std::transform
+    (
+        std::cbegin(_objects),
+        std::cend(_objects),
+        std::back_inserter(intersections),
+        [&](Object const& obj) -> ObjectIntersection
+        {
+            return {&obj, obj.intersect(ray)};
+        }
+    );
+
+    intersections.erase
+    (
+        std::remove_if
+        (
+            std::begin(intersections),
+            std::end(intersections),
+            [](ObjectIntersection const& objectIntersection)
+                {
+                    return !objectIntersection.second.has_value()  || (objectIntersection.second.value().t < 1.0);
+                }
+        ),
+        std::end(intersections)
+    );
+
+    if (intersections.empty())
+    {
+        return {nullptr, std::nullopt};
+    }
+
+    auto minT = std::min_element
+    (
+        std::begin(intersections),
+        std::end(intersections),
+        [](std::pair<Object const*,std::optional<Intersection>> const& lhs, std::pair<Object const*,std::optional<Intersection>> const& rhs)
+        {
+            return lhs.second.value().t < rhs.second.value().t;
+        }
+    );
+
+    return *minT;
+}
+auto Renderer::canReachLightSource(point3 intersection) const -> bool
+{
+    auto ray = Ray{intersection, _settings.lightPosition - intersection};
+
+    for (auto const& obj : _objects)
+    {
+        auto intersectOpt = obj.intersect(ray);
+        if (intersectOpt.has_value())
+        {
+            if (intersectOpt.value().t < 1.0)
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
 }

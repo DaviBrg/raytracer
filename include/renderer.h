@@ -38,7 +38,11 @@ private:
     Camera _camera;
     std::vector<Object> _objects;
 
-    auto renderIntersection(rtsize pixelIndex, Ray const& ray, Intersection const& intersection, Material const& material) -> void;
+    using ObjectIntersection = std::pair<Object const*,std::optional<Intersection>>;
+
+    auto renderIntersection(rtsize pixelIndex, Ray const& ray, Intersection const& intersection, Material const& material) const -> void;
+    auto closestIntersection(Ray const& ray) const -> ObjectIntersection;
+    auto canReachLightSource(point3 intersection) const -> bool;
 
 };
 

@@ -19,14 +19,20 @@ auto Sphere::intersect(Ray const &ray) const noexcept -> std::optional<Intersect
         return std::nullopt;
     }
 
-    const rtfloat t1 = (-b + sqrt(delta))/(2*a);
-    const rtfloat t2 = (-b - sqrt(delta))/(2*a);
+    const rtfloat t1 = std::max((-b + sqrt(delta))/(2*a), 0.0);
+    const rtfloat t2 = std::max((-b - sqrt(delta))/(2*a), 0.0);
     const rtfloat intersetcT = std::min(t1, t2);
 
-    const point3 intersectPoint = ray.origin() + (ray.direction()*intersetcT);
-    const vec3 intersectNormal = (intersectPoint - _center).normalize();
-
-    return std::optional<Intersection>(Intersection{intersetcT, intersectNormal});
+    if (intersetcT > 0.0)
+    {
+        const point3 intersectPoint = ray.origin() + (ray.direction()*intersetcT);
+        const vec3 intersectNormal = (intersectPoint - _center).normalize();
+        return std::optional<Intersection>(Intersection{intersetcT, intersectNormal});
+        
+    } else
+    {
+        return std::nullopt;
+    }
 }
 
 }
