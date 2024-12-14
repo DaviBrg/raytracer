@@ -29,6 +29,4 @@ private:
     
 };
 
-using Rays = std::vector<Ray>;
-
 }

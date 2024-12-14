@@ -19,21 +19,22 @@ Camera::Camera(Settings const& settings):
     _eye{settings.eye},
     _at{settings.at} {}
 
-auto Camera::createRays() const -> Rays
+auto Camera::createRays() const -> PixelRays
 {
-    Rays result;
-    rtfloat heightStep = _viewportHeight/_pixelsHeight;
-    rtfloat widthStep = _viewportWidth/_pixelsWidth;
+    PixelRays result;
+    const rtfloat heightStep = _viewportHeight/_pixelsHeight;
+    const rtfloat widthStep = _viewportWidth/_pixelsWidth;
     auto topLeft = _eye + ((_at - _eye).normalize()*_focalLength) + ((-_u)*(_viewportWidth*0.5)) + ((-_v)*(_viewportHeight*0.5));
 
-    point3 start = topLeft + _u*heightStep*0.5 + _v*widthStep*0.5;
+    const point3 start = topLeft + _u*heightStep*0.5 + _v*widthStep*0.5;
 
+    rtsize pixelIndex = 0;
     for (rtsize height = 0; height < _pixelsHeight; ++height)
     {
         for (rtsize width = 0; width < _pixelsWidth; ++width)
         {
-            vec3 at = start + (_u*widthStep*width) + (_v*heightStep*height);
-            result.emplace_back(_eye, at - _eye);
+            const vec3 at = start + (_u*widthStep*width) + (_v*heightStep*height);
+            result.emplace_back(pixelIndex++, Ray{_eye, at - _eye});
         }
     }
     return result;

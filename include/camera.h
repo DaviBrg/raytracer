@@ -7,6 +7,14 @@
 namespace rtracer
 {
 
+struct PixelRay
+{
+    rtsize pixel;
+    Ray ray;
+};
+
+using PixelRays = std::vector<PixelRay>;
+
 struct Camera
 {
     struct Settings
@@ -53,7 +61,7 @@ struct Camera
         return _focalLength;
     }
 
-    [[nodiscard]] auto createRays() const -> Rays;
+    [[nodiscard]] auto createRays() const -> PixelRays;
 
 
     private:

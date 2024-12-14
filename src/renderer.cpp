@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <thread>
 #include <tuple>
 
 namespace rtracer
@@ -36,30 +37,26 @@ _camera{createCameraSettings(image, settings)} {}
 
 auto Renderer::render() const -> void
 {
-    auto rays = _camera.createRays();
-    assert(_image.size() == rays.size());
+    const auto pixelRays = _camera.createRays();
+    assert(_image.size() == pixelRays.size());
 
-    for(rtsize i = 0; i < _image.size(); ++i)
+    const rtsize numThreads = std::thread::hardware_concurrency();
+
+    auto parallelRender = [this,&pixelRays,numThreads](rtsize threadIndex)
     {
-        Ray const& ray = rays.at(i);
-        auto [ptrObj, optIntersection] = closestIntersection(ray);
-        if (optIntersection.has_value())
+        for (;threadIndex < pixelRays.size(); threadIndex += numThreads)
         {
-            auto intersection = optIntersection.value();
-            auto intersectionPoint = ray.origin() + ray.direction()*intersection.t;
-            if (canReachLightSource(intersectionPoint))
-            {
-                renderIntersection(i, ray, intersection, ptrObj->material());
-            }
-            else
-            {
-                _image[i] = (AMBIENT_COMPONENT*ptrObj->material().ambient);
-            }
+            renderPixelRay(pixelRays[threadIndex]);    
         }
-        else
+    };
+
+    std::vector<std::jthread> threads;
+
+    for (rtsize threadIndex = 0; threadIndex < numThreads; ++threadIndex) {
+        threads.emplace_back([&parallelRender,threadIndex]()
         {
-            _image[i] = _settings.backgroundColor;
-        }
+            parallelRender(threadIndex);
+        });
     }
 }
 
@@ -74,12 +71,45 @@ auto Renderer::addObject(Object object) -> void
     _objects.emplace_back(std::move(object));
 }
 
-auto Renderer::renderIntersection(rtsize pixelIndex, Ray const& ray,  Intersection const &intersection, Material const& material) const -> void
+auto Renderer::renderPixelRay(PixelRay const &pixelRay) const -> void
+{
+    auto pixelIndex = pixelRay.pixel;
+        auto [ptrObj, optIntersection] = closestIntersection(pixelRay.ray);
+        if (optIntersection.has_value())
+        {
+            auto intersection = optIntersection.value();
+            auto intersectionPoint = pixelRay.ray.origin() + pixelRay.ray.direction()*intersection.t;
+            if (canReachLightSource(intersectionPoint))
+            {
+                renderPhong(pixelIndex, pixelRay.ray, intersection, ptrObj->material());
+            }
+            else
+            {
+                renderAmbient(pixelIndex, ptrObj->material());
+            }
+        }
+        else
+        {
+            renderBackground(pixelIndex);
+        }
+}
+
+auto Renderer::renderPhong(rtsize pixelIndex, Ray const &ray, Intersection const &intersection, Material const &material) const -> void
 {
     auto toLight = (_settings.lightPosition - (ray.origin() + ray.direction()*intersection.t)).normalize();
     auto diffuseComponenet = dot(intersection.normal, toLight);
     if (diffuseComponenet < 0) diffuseComponenet = 0;
     _image[pixelIndex] = material.diffuse*diffuseComponenet + (AMBIENT_COMPONENT*material.ambient);
+}
+
+auto Renderer::renderAmbient(rtsize pixelIndex, Material const& material) const -> void
+{
+    _image[pixelIndex] = (AMBIENT_COMPONENT*material.ambient);
+}
+
+auto Renderer::renderBackground(rtsize pixelIndex) const -> void
+{
+    _image[pixelIndex] = _settings.backgroundColor;
 }
 
 auto Renderer::closestIntersection(Ray const& ray) const -> ObjectIntersection
