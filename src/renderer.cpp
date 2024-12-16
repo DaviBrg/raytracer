@@ -1,6 +1,7 @@
 #include "renderer.h"
 
 #include <algorithm>
+#include <execution>
 #include <cassert>
 #include <thread>
 #include <tuple>
@@ -11,7 +12,9 @@ namespace rtracer
 namespace
 {
 
-constexpr rtfloat AMBIENT_COMPONENT = 0.3;
+constexpr rtfloat AMBIENT_COMPONENT = 0.2;
+constexpr rtfloat DIFFUSE_COMPONENT = 0.8;
+constexpr rtfloat SPECULAR_COMPONENT = 0.3;
 
 Camera::Settings createCameraSettings(const Image& image, Renderer::Settings settings)
 {
@@ -96,10 +99,22 @@ auto Renderer::renderPixelRay(PixelRay const &pixelRay) const -> void
 
 auto Renderer::renderPhong(rtsize pixelIndex, Ray const &ray, Intersection const &intersection, Material const &material) const -> void
 {
-    auto toLight = (_settings.lightPosition - (ray.origin() + ray.direction()*intersection.t)).normalize();
+    const auto intersectionPoint = ray.origin() + ray.direction()*intersection.t;
+    const auto toLight = (_settings.lightPosition - intersectionPoint).normalize();
+
     auto diffuseComponenet = dot(intersection.normal, toLight);
-    if (diffuseComponenet < 0) diffuseComponenet = 0;
-    _image[pixelIndex] = material.diffuse*diffuseComponenet + (AMBIENT_COMPONENT*material.ambient);
+    if (diffuseComponenet < 0)
+    {
+        _image[pixelIndex] = AMBIENT_COMPONENT*material.ambient;
+        return;
+    }
+
+    const auto reflection = (2.0*dot(intersection.normal, toLight)*intersection.normal) - toLight;
+    const auto toView = (_settings.eye - intersectionPoint).normalize();
+    auto specularComponenet = pow(dot(reflection, toView), 25);
+    if (specularComponenet < 0) specularComponenet = 0;
+
+    _image[pixelIndex] = (SPECULAR_COMPONENT*material.specular*specularComponenet) + (DIFFUSE_COMPONENT*material.diffuse*diffuseComponenet) + (AMBIENT_COMPONENT*material.ambient);
 }
 
 auto Renderer::renderAmbient(rtsize pixelIndex, Material const& material) const -> void
